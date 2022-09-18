@@ -64,9 +64,9 @@ videosRouter.post("", (req: Request, res: Response) => {
     }
     let createdAt = new Date();
     let resolutionOfVideo = [];
-    if (req.body.availableResolutions && resolutions.find(r => r == req.body.availableResolutions[0])) {
-        resolutionOfVideo.push(req.body.availableResolutions[0]);
-    }
+    // if (req.body.availableResolutions && resolutions.find(r => r == req.body.availableResolutions[0])) {
+    //     resolutionOfVideo.push(req.body.availableResolutions[0]);
+    // }
     let newVideo = {
         "id": videos.length + 1,
         "title": req.body.title,
@@ -75,7 +75,7 @@ videosRouter.post("", (req: Request, res: Response) => {
         "minAgeRestriction": null,
         "createdAt": createdAt.toJSON(),
         "publicationDate": (new Date(createdAt.setDate(createdAt.getDate() + 1))).toJSON(),
-        "availableResolutions": resolutionOfVideo
+        "availableResolutions": req.body.availableResolutions//resolutionOfVideo
     }
     videos.push(newVideo);
     res.status(201).send(newVideo)
@@ -120,8 +120,8 @@ videosRouter.put("/:id", (req: Request, res: Response) => {
         if (req.body.canBeDownloaded != null) video.canBeDownloaded = req.body.canBeDownloaded;
         if (req.body.minAgeRestriction != null) video.minAgeRestriction = req.body.minAgeRestriction;
         if (req.body.publicationDate != null) video.publicationDate = req.body.publicationDate;
-        if (req.body.availableResolutions != null && resolutions.find(r => r == req.body.availableResolutions[0])) {
-            video.availableResolutions = req.body.availableResolutions[0];}
+        if (req.body.availableResolutions != null /*&& resolutions.find(r => r == req.body.availableResolutions[0])*/) {
+            video.availableResolutions = req.body.availableResolutions/*[0]*/;}
         res.sendStatus(204);
     } else {
         res.sendStatus(404);
