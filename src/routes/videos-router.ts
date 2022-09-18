@@ -22,7 +22,7 @@ type typeErrorResult = {
     "errorsMessages": Array<typeError>
 }
 
-let resolutions: typeResolutions = ["P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160"]
+//let resolutions: typeResolutions = ["P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160"]
 let videos: Array<typeVideo> = []
 let APIErrorResult: typeErrorResult = {
     "errorsMessages": [
@@ -32,7 +32,6 @@ let APIErrorResult: typeErrorResult = {
         }
     ]
 }
-
 
 videosRouter.get("", (req: Request, res: Response) => {
     res.send(videos)
@@ -63,10 +62,7 @@ videosRouter.post("", (req: Request, res: Response) => {
         return
     }
     let createdAt = new Date();
-    let resolutionOfVideo = [];
-    // if (req.body.availableResolutions && resolutions.find(r => r == req.body.availableResolutions[0])) {
-    //     resolutionOfVideo.push(req.body.availableResolutions[0]);
-    // }
+
     let newVideo = {
         "id": videos.length + 1,
         "title": req.body.title,
@@ -75,7 +71,7 @@ videosRouter.post("", (req: Request, res: Response) => {
         "minAgeRestriction": null,
         "createdAt": createdAt.toJSON(),
         "publicationDate": (new Date(createdAt.setDate(createdAt.getDate() + 1))).toJSON(),
-        "availableResolutions": req.body.availableResolutions//resolutionOfVideo
+        "availableResolutions": req.body.availableResolutions
     }
     videos.push(newVideo);
     res.status(201).send(newVideo)
@@ -120,8 +116,9 @@ videosRouter.put("/:id", (req: Request, res: Response) => {
         if (req.body.canBeDownloaded != null) video.canBeDownloaded = req.body.canBeDownloaded;
         if (req.body.minAgeRestriction != null) video.minAgeRestriction = req.body.minAgeRestriction;
         if (req.body.publicationDate != null) video.publicationDate = req.body.publicationDate;
-        if (req.body.availableResolutions != null /*&& resolutions.find(r => r == req.body.availableResolutions[0])*/) {
-            video.availableResolutions = req.body.availableResolutions/*[0]*/;}
+        if (req.body.availableResolutions != null) {
+            video.availableResolutions = req.body.availableResolutions;
+        }
         res.sendStatus(204);
     } else {
         res.sendStatus(404);
