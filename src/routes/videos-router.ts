@@ -25,42 +25,47 @@ type typeErrorResult = {
 //let resolutions: typeResolutions = ["P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160"]
 let videos: Array<typeVideo> = []
 let APIErrorResult: typeErrorResult = {
-    "errorsMessages": [
-        {
-            "message": "",
-            "field": ""
-        }
-    ]
+    "errorsMessages": []
 }
 
 videosRouter.get("", (req: Request, res: Response) => {
     res.send(videos)
 })
 videosRouter.post("", (req: Request, res: Response) => {
+    APIErrorResult.errorsMessages.splice(0);
     if (req.body.title == null) {
-        APIErrorResult.errorsMessages[0].message = "Error! empty parameter";
-        APIErrorResult.errorsMessages[0].field = "title";
-        res.status(400).send(APIErrorResult)
-        return
+        APIErrorResult.errorsMessages.push(
+            {
+                message: "Error! empty parameter",
+                field: "title"
+            })
     }
     if (req.body.author == null) {
-        APIErrorResult.errorsMessages[0].message = "Error! empty parameter";
-        APIErrorResult.errorsMessages[0].field = "author";
+        APIErrorResult.errorsMessages.push(
+            {
+                message: "Error! empty parameter",
+                field: "author"
+            })
+    }
+    if (req.body.title != null && req.body.title.length > 40) {
+        APIErrorResult.errorsMessages.push(
+            {
+                message: "Error! maxLength: 40",
+                field: "title"
+            })
+    }
+    if (req.body.author != null && req.body.author.length > 20) {
+        APIErrorResult.errorsMessages.push(
+            {
+                message: "Error! maxLength: 20",
+                field: "author"
+            })
+    }
+    if (APIErrorResult.errorsMessages.length > 0) {
         res.status(400).send(APIErrorResult)
         return
     }
-    if (req.body.title.length > 40) {
-        APIErrorResult.errorsMessages[0].message = "Error! maxLength: 40";
-        APIErrorResult.errorsMessages[0].field = "title";
-        res.status(400).send(APIErrorResult)
-        return
-    }
-    if (req.body.author.length > 20) {
-        APIErrorResult.errorsMessages[0].message = "Error! maxLength: 20";
-        APIErrorResult.errorsMessages[0].field = "author";
-        res.status(400).send(APIErrorResult)
-        return
-    }
+
     let createdAt = new Date();
 
     let newVideo = {
@@ -85,30 +90,47 @@ videosRouter.get("/:id", (req: Request, res: Response) => {
     }
 })
 videosRouter.put("/:id", (req: Request, res: Response) => {
+    APIErrorResult.errorsMessages.splice(0);
     if (req.body.title == null) {
-        APIErrorResult.errorsMessages[0].message = "Error! empty parameter";
-        APIErrorResult.errorsMessages[0].field = "title";
-        res.status(400).send(APIErrorResult)
-        return
+        APIErrorResult.errorsMessages.push(
+            {
+                message: "Error! empty parameter",
+                field: "title"
+            })
     }
     if (req.body.author == null) {
-        APIErrorResult.errorsMessages[0].message = "Error! empty parameter";
-        APIErrorResult.errorsMessages[0].field = "author";
+        APIErrorResult.errorsMessages.push(
+            {
+                message: "Error! empty parameter",
+                field: "author"
+            })
+    }
+    if (req.body.title != null && req.body.title.length > 40) {
+        APIErrorResult.errorsMessages.push(
+            {
+                message: "Error! maxLength: 40",
+                field: "title"
+            })
+    }
+    if (req.body.author != null && req.body.author.length > 20) {
+        APIErrorResult.errorsMessages.push(
+            {
+                message: "Error! maxLength: 20",
+                field: "author"
+            })
+    }
+    if (typeof req.body.canBeDownloaded !== "boolean") {
+        APIErrorResult.errorsMessages.push(
+            {
+                message: "Error! not boolean parameter",
+                field: "canBeDownloaded"
+            })
+    }
+    if (APIErrorResult.errorsMessages.length > 0) {
         res.status(400).send(APIErrorResult)
         return
     }
-    if (req.body.title.length > 40) {
-        APIErrorResult.errorsMessages[0].message = "Error! maxLength: 40";
-        APIErrorResult.errorsMessages[0].field = "title";
-        res.status(400).send(APIErrorResult)
-        return
-    }
-    if (req.body.author.length > 20) {
-        APIErrorResult.errorsMessages[0].message = "Error! maxLength: 20";
-        APIErrorResult.errorsMessages[0].field = "author";
-        res.status(400).send(APIErrorResult)
-        return
-    }
+
     let video = videos.find(v => v.id == +req.params.id)
     if (video) {
         video.title = req.body.title;
