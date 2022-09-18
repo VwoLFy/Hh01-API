@@ -23,20 +23,7 @@ type typeErrorResult = {
 }
 
 let resolutions: typeResolutions = ["P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160"]
-let videos: Array<typeVideo> = [
-    {
-        "id": 0,
-        "title": "string",
-        "author": "string",
-        "canBeDownloaded": true,
-        "minAgeRestriction": null,
-        "createdAt": "2022-09-18T11:01:40.424Z",
-        "publicationDate": "2022-09-18T11:01:40.424Z",
-        "availableResolutions": [
-            "P144"
-        ]
-    }
-]
+let videos: Array<typeVideo> = []
 let APIErrorResult: typeErrorResult = {
     "errorsMessages": [
         {
