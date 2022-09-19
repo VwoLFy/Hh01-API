@@ -144,6 +144,13 @@ videosRouter.put("/:id", (req: Request, res: Response) => {
                 field: "canBeDownloaded"
             })
     }
+    if (typeof req.body.publicationDate !== "string") {
+        APIErrorResult.errorsMessages.push(
+            {
+                message: "Error! is not valid date",
+                field: "publicationDate"
+            })
+    }
     if (req.body.minAgeRestriction != null && (typeof req.body.minAgeRestriction != "number" || (req.body.minAgeRestriction > 18 || req.body.minAgeRestriction < 1))) {
         APIErrorResult.errorsMessages.push(
             {
