@@ -3,7 +3,7 @@ import {Request, Response, Router} from "express";
 export const videosRouter = Router({});
 export const deleteRouter = Router({});
 
-type typeResolutions = Array<string | null>
+type typeResolutions = Array<string>
 type typeVideo = {
     "id": number,
     "title": string,
@@ -12,7 +12,7 @@ type typeVideo = {
     "minAgeRestriction": number | null,
     "createdAt": string,
     "publicationDate": string,
-    "availableResolutions": typeResolutions | null
+    "availableResolutions": typeResolutions
 }
 type typeError = {
     "message": string,
@@ -22,7 +22,7 @@ type typeErrorResult = {
     "errorsMessages": Array<typeError>
 }
 
-//let resolutions: typeResolutions = ["P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160"]
+let resolutions: typeResolutions = ["P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160"]
 let videos: Array<typeVideo> = []
 let APIErrorResult: typeErrorResult = {
     "errorsMessages": []
@@ -60,6 +60,24 @@ videosRouter.post("", (req: Request, res: Response) => {
                 message: "Error! maxLength: 20",
                 field: "author"
             })
+    }
+    if (!Array.isArray(req.body.availableResolutions)) {
+        APIErrorResult.errorsMessages.push(
+            {
+                message: "Error! input is not valid",
+                field: "availableResolutions"
+            })
+    } else {
+        for (let res of req.body.availableResolutions) {
+            if (!resolutions.includes(res)) {
+                APIErrorResult.errorsMessages.push(
+                    {
+                        message: "Error! input is not valid",
+                        field: "availableResolutions"
+                    })
+                break
+            }
+        }
     }
     if (APIErrorResult.errorsMessages.length > 0) {
         res.status(400).send(APIErrorResult)
@@ -126,6 +144,31 @@ videosRouter.put("/:id", (req: Request, res: Response) => {
                 field: "canBeDownloaded"
             })
     }
+    if (req.body.minAgeRestriction != null && (typeof req.body.minAgeRestriction != "number" || (req.body.minAgeRestriction > 18 || req.body.minAgeRestriction < 1))) {
+        APIErrorResult.errorsMessages.push(
+            {
+                message: "Error! minAgeRestriction must be in range from 1 to 18",
+                field: "minAgeRestriction"
+            })
+    }
+    if (!Array.isArray(req.body.availableResolutions)) {
+        APIErrorResult.errorsMessages.push(
+            {
+                message: "Error! input is not valid",
+                field: "availableResolutions"
+            })
+    } else {
+        for (let res of req.body.availableResolutions) {
+            if (!resolutions.includes(res)) {
+                APIErrorResult.errorsMessages.push(
+                    {
+                        message: "Error! input is not valid",
+                        field: "availableResolutions"
+                    })
+                break
+            }
+        }
+    }
     if (APIErrorResult.errorsMessages.length > 0) {
         res.status(400).send(APIErrorResult)
         return
@@ -136,7 +179,7 @@ videosRouter.put("/:id", (req: Request, res: Response) => {
         video.title = req.body.title;
         video.author = req.body.author;
         if (req.body.canBeDownloaded != null) video.canBeDownloaded = req.body.canBeDownloaded;
-        if (req.body.minAgeRestriction != null) video.minAgeRestriction = req.body.minAgeRestriction;
+        if (req.body.minAgeRestriction) video.minAgeRestriction = req.body.minAgeRestriction;
         if (req.body.publicationDate != null) video.publicationDate = req.body.publicationDate;
         if (req.body.availableResolutions != null) {
             video.availableResolutions = req.body.availableResolutions;
