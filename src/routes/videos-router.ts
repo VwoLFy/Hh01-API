@@ -28,10 +28,10 @@ let APIErrorResult: typeErrorResult = {
     "errorsMessages": []
 }
 
-videosRouter.get("", (req: Request, res: Response) => {
+videosRouter.get("/", (req: Request, res: Response) => {
     res.send(videos)
 })
-videosRouter.post("", (req: Request, res: Response) => {
+videosRouter.post("/", (req: Request, res: Response) => {
     APIErrorResult.errorsMessages.splice(0);
     if (req.body.title == null) {
         APIErrorResult.errorsMessages.push(
@@ -206,7 +206,7 @@ videosRouter.delete("/:id", (req: Request, res: Response) => {
     }
 })
 
-deleteRouter.delete("", (req: Request, res: Response) => {
+deleteRouter.delete("/", (req: Request, res: Response) => {
     videos.splice(0);
     res.sendStatus(204);
 })
