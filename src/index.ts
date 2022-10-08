@@ -1,12 +1,10 @@
 import express from "express"
-//import bodyParser from "body-parser";
 import {deleteRouter, videosRouter} from "./routes/videos-router";
 
 const app = express();
 const parserM = express.json()
 const PORT = process.env.PORT || 5000;
 
-//let parserM = bodyParser({});
 app.use(parserM);
 
 app.use("/testing/all-data", deleteRouter)
