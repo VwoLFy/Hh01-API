@@ -1,5 +1,5 @@
 import express from "express"
-import {deleteRouter, videosRouter} from "./routes/videos-router";
+import {deleteRouter, videosRouter} from "./routes/router";
 
 const app = express();
 const PORT = process.env.PORT || 5000;

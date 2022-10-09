@@ -44,28 +44,28 @@ export const videosRepository = {
     },
     createVideo (title: string, author: string, availableResolutions: typeResolutions) {
         APIErrorResult.errorsMessages.splice(0);
-        if (title == null) {
+        title = title.trim();
+        author = author.trim();
+        if (!title) {
             APIErrorResult.errorsMessages.push(
                 {
                     message: "Error! empty parameter",
                     field: "title"
                 })
-        }
-        if (author == null) {
-            APIErrorResult.errorsMessages.push(
-                {
-                    message: "Error! empty parameter",
-                    field: "author"
-                })
-        }
-        if (title != null && title.length > 40) {
+        } else if (title.length > 40) {
             APIErrorResult.errorsMessages.push(
                 {
                     message: "Error! maxLength: 40",
                     field: "title"
                 })
         }
-        if (author != null && author.length > 20) {
+        if (!author) {
+            APIErrorResult.errorsMessages.push(
+                {
+                    message: "Error! empty parameter",
+                    field: "author"
+                })
+        } else if (author.length > 20) {
             APIErrorResult.errorsMessages.push(
                 {
                     message: "Error! maxLength: 20",
@@ -111,28 +111,28 @@ export const videosRepository = {
     },
     updateVideoById(id: number, title: string, author: string, canBeDownloaded: boolean, minAgeRestriction: number | null, publicationDate: string, availableResolutions: typeResolutions) {
         APIErrorResult.errorsMessages.splice(0);
-        if (title == null) {
+        title = title.trim();
+        author = author.trim();
+        if (!title) {
             APIErrorResult.errorsMessages.push(
                 {
                     message: "Error! empty parameter",
                     field: "title"
                 })
-        }
-        if (author == null) {
-            APIErrorResult.errorsMessages.push(
-                {
-                    message: "Error! empty parameter",
-                    field: "author"
-                })
-        }
-        if (title != null && title.length > 40) {
+        } else if (title.length > 40) {
             APIErrorResult.errorsMessages.push(
                 {
                     message: "Error! maxLength: 40",
                     field: "title"
                 })
         }
-        if (author != null && author.length > 20) {
+        if (!author) {
+            APIErrorResult.errorsMessages.push(
+                {
+                    message: "Error! empty parameter",
+                    field: "author"
+                })
+        } else if (author.length > 20) {
             APIErrorResult.errorsMessages.push(
                 {
                     message: "Error! maxLength: 20",
