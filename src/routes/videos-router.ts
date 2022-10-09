@@ -1,216 +1,45 @@
 import {Request, Response, Router} from "express";
+import {videosRepository} from "../repositories/repository";
 
 export const videosRouter = Router({});
 export const deleteRouter = Router({});
 
-type typeResolutions = Array<string>
-type typeVideo = {
-    "id": number,
-    "title": string,
-    "author": string,
-    "canBeDownloaded": boolean,
-    "minAgeRestriction": number | null,
-    "createdAt": string,
-    "publicationDate": string,
-    "availableResolutions": typeResolutions
-}
-type typeError = {
-    "message": string,
-    "field": string
-}
-type typeErrorResult = {
-    "errorsMessages": Array<typeError>
-}
-
-const enum listRes {
-    P144 = "P144",
-    P240 = "P240",
-    P360 = "P360",
-    P480 = "P480",
-    P720 = "P720",
-    P1080 = "P1080",
-    P1440 = "P1440",
-    P2160 = "P2160"
-}
-
-let resolutions: typeResolutions = [listRes.P144, listRes.P240, listRes.P360, listRes.P480, listRes.P720, listRes.P1080, listRes.P1440, listRes.P2160]
-let videos: Array<typeVideo> = []
-let APIErrorResult: typeErrorResult = {
-    "errorsMessages": []
-}
 
 videosRouter.get("/", (req: Request, res: Response) => {
-    res.send(videos)
+    const foundVideos = videosRepository.findVideos();
+    res.send(foundVideos)
 })
 videosRouter.post("/", (req: Request, res: Response) => {
-    APIErrorResult.errorsMessages.splice(0);
-    if (req.body.title == null) {
-        APIErrorResult.errorsMessages.push(
-            {
-                message: "Error! empty parameter",
-                field: "title"
-            })
-    }
-    if (req.body.author == null) {
-        APIErrorResult.errorsMessages.push(
-            {
-                message: "Error! empty parameter",
-                field: "author"
-            })
-    }
-    if (req.body.title != null && req.body.title.length > 40) {
-        APIErrorResult.errorsMessages.push(
-            {
-                message: "Error! maxLength: 40",
-                field: "title"
-            })
-    }
-    if (req.body.author != null && req.body.author.length > 20) {
-        APIErrorResult.errorsMessages.push(
-            {
-                message: "Error! maxLength: 20",
-                field: "author"
-            })
-    }
-    if (!Array.isArray(req.body.availableResolutions)) {
-        APIErrorResult.errorsMessages.push(
-            {
-                message: "Error! input is not valid",
-                field: "availableResolutions"
-            })
+    const resultOfCreated = videosRepository.createVideo(req.body.title, req.body.author, req.body.availableResolutions)
+    if (!resultOfCreated.isPosted) {
+        res.status(400)
     } else {
-        for (let res of req.body.availableResolutions) {
-            if (!resolutions.includes(res)) {
-                APIErrorResult.errorsMessages.push(
-                    {
-                        message: "Error! input is not valid",
-                        field: "availableResolutions"
-                    })
-                break
-            }
-        }
+        res.status(201)
     }
-    if (APIErrorResult.errorsMessages.length > 0) {
-        res.status(400).send(APIErrorResult)
-        return
-    }
+    res.send(resultOfCreated.result);
 
-    let createdAt = new Date();
-
-    let newVideo = {
-        "id": videos.length + 1,
-        "title": req.body.title,
-        "author": req.body.author,
-        "canBeDownloaded": false,
-        "minAgeRestriction": null,
-        "createdAt": createdAt.toJSON(),
-        "publicationDate": (new Date(createdAt.setDate(createdAt.getDate() + 1))).toJSON(),
-        "availableResolutions": req.body.availableResolutions
-    }
-    videos.push(newVideo);
-    res.status(201).send(newVideo)
 })
 videosRouter.get("/:id", (req: Request, res: Response) => {
-    let video = videos.find(v => v.id == +req.params.id)
-    if (video) {
-        res.send(video);
+    let foundVideo = videosRepository.findVideoById(+req.params.id)
+    if (foundVideo) {
+        res.send(foundVideo);
     } else {
         res.sendStatus(404);
     }
 })
 videosRouter.put("/:id", (req: Request, res: Response) => {
-    APIErrorResult.errorsMessages.splice(0);
-    if (req.body.title == null) {
-        APIErrorResult.errorsMessages.push(
-            {
-                message: "Error! empty parameter",
-                field: "title"
-            })
-    }
-    if (req.body.author == null) {
-        APIErrorResult.errorsMessages.push(
-            {
-                message: "Error! empty parameter",
-                field: "author"
-            })
-    }
-    if (req.body.title != null && req.body.title.length > 40) {
-        APIErrorResult.errorsMessages.push(
-            {
-                message: "Error! maxLength: 40",
-                field: "title"
-            })
-    }
-    if (req.body.author != null && req.body.author.length > 20) {
-        APIErrorResult.errorsMessages.push(
-            {
-                message: "Error! maxLength: 20",
-                field: "author"
-            })
-    }
-    if (typeof req.body.canBeDownloaded !== "boolean") {
-        APIErrorResult.errorsMessages.push(
-            {
-                message: "Error! not boolean parameter",
-                field: "canBeDownloaded"
-            })
-    }
-    if (typeof req.body.publicationDate !== "string") {
-        APIErrorResult.errorsMessages.push(
-            {
-                message: "Error! is not valid date",
-                field: "publicationDate"
-            })
-    }
-    if (req.body.minAgeRestriction != null && (typeof req.body.minAgeRestriction != "number" || (req.body.minAgeRestriction > 18 || req.body.minAgeRestriction < 1))) {
-        APIErrorResult.errorsMessages.push(
-            {
-                message: "Error! minAgeRestriction must be in range from 1 to 18",
-                field: "minAgeRestriction"
-            })
-    }
-    if (!Array.isArray(req.body.availableResolutions)) {
-        APIErrorResult.errorsMessages.push(
-            {
-                message: "Error! input is not valid",
-                field: "availableResolutions"
-            })
-    } else {
-        for (let res of req.body.availableResolutions) {
-            if (!resolutions.includes(res)) {
-                APIErrorResult.errorsMessages.push(
-                    {
-                        message: "Error! input is not valid",
-                        field: "availableResolutions"
-                    })
-                break
-            }
-        }
-    }
-    if (APIErrorResult.errorsMessages.length > 0) {
-        res.status(400).send(APIErrorResult)
-        return
-    }
-
-    let video = videos.find(v => v.id == +req.params.id)
-    if (video) {
-        video.title = req.body.title;
-        video.author = req.body.author;
-        if (req.body.canBeDownloaded != null) video.canBeDownloaded = req.body.canBeDownloaded;
-        if (req.body.minAgeRestriction) video.minAgeRestriction = req.body.minAgeRestriction;
-        if (req.body.publicationDate != null) video.publicationDate = req.body.publicationDate;
-        if (req.body.availableResolutions != null) {
-            video.availableResolutions = req.body.availableResolutions;
-        }
-        res.sendStatus(204);
-    } else {
+    let resultOfUpdated = videosRepository.updateVideoById(+req.params.id, req.body.title, req.body.author, req.body.canBeDownloaded, req.body.minAgeRestriction, req.body.publicationDate, req.body.availableResolutions)
+    if (!resultOfUpdated.isUpdated && resultOfUpdated.error) {
+        res.status(400).send(resultOfUpdated.error)
+    } else if (!resultOfUpdated.isUpdated && resultOfUpdated) {
         res.sendStatus(404);
+    } else {
+        res.sendStatus(204);
     }
 })
 videosRouter.delete("/:id", (req: Request, res: Response) => {
-    let video = videos.find(v => v.id == +req.params.id)
-    if (video) {
-        videos.splice(videos.indexOf(video), 1);
+    let isDeleted = videosRepository.deleteVideo(+req.params.id)
+    if (isDeleted) {
         res.sendStatus(204);
     } else {
         res.sendStatus(404);
@@ -218,6 +47,6 @@ videosRouter.delete("/:id", (req: Request, res: Response) => {
 })
 
 deleteRouter.delete("/", (req: Request, res: Response) => {
-    videos.splice(0);
+    videosRepository.deleteAllVideos();
     res.sendStatus(204);
 })

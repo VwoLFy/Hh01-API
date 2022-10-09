@@ -2,9 +2,9 @@ import express from "express"
 import {deleteRouter, videosRouter} from "./routes/videos-router";
 
 const app = express();
-const parserM = express.json()
 const PORT = process.env.PORT || 5000;
 
+const parserM = express.json()
 app.use(parserM);
 
 app.use("/testing/all-data", deleteRouter)
