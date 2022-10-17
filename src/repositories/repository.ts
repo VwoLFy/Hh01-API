@@ -30,9 +30,6 @@ const enum listRes {
 
 let resolutions: typeResolutions = [listRes.P144, listRes.P240, listRes.P360, listRes.P480, listRes.P720, listRes.P1080, listRes.P1440, listRes.P2160]
 let videos: Array<typeVideo> = []
-let APIErrorResult: typeErrorResult = {
-    "errorsMessages": []
-}
 
 export const videosRepository = {
     findVideos () {
@@ -43,13 +40,14 @@ export const videosRepository = {
         return foundVideo
     },
     createVideo (title: string, author: string, availableResolutions: typeResolutions) {
-        APIErrorResult.errorsMessages.splice(0);
-        title = title?.trim();
-        author = author?.trim();
-        if (!title) {
+        let APIErrorResult: typeErrorResult = {
+            "errorsMessages": []
+        }
+
+        if (typeof title !== "string" || !title.trim()) {
             APIErrorResult.errorsMessages.push(
                 {
-                    message: "Error! empty parameter",
+                    message: "Error! empty parameter or not a string",
                     field: "title"
                 })
         } else if (title.length > 40) {
@@ -59,10 +57,10 @@ export const videosRepository = {
                     field: "title"
                 })
         }
-        if (!author) {
+        if (typeof author !== "string" || !author.trim()) {
             APIErrorResult.errorsMessages.push(
                 {
-                    message: "Error! empty parameter",
+                    message: "Error! empty parameter or not a string",
                     field: "author"
                 })
         } else if (author.length > 20) {
@@ -110,13 +108,13 @@ export const videosRepository = {
         return {isPosted: true, result: newVideo}
     },
     updateVideoById(id: number, title: string, author: string, canBeDownloaded: boolean, minAgeRestriction: number | null, publicationDate: string, availableResolutions: typeResolutions) {
-        APIErrorResult.errorsMessages.splice(0);
-        title = title?.trim();
-        author = author?.trim();
-        if (!title) {
+        let APIErrorResult: typeErrorResult = {
+            "errorsMessages": []
+        }
+        if (typeof title !== "string" || !title.trim()) {
             APIErrorResult.errorsMessages.push(
                 {
-                    message: "Error! empty parameter",
+                    message: "Error! empty parameter or not a string",
                     field: "title"
                 })
         } else if (title.length > 40) {
@@ -126,10 +124,10 @@ export const videosRepository = {
                     field: "title"
                 })
         }
-        if (!author) {
+        if (typeof author !== "string" || !author.trim()) {
             APIErrorResult.errorsMessages.push(
                 {
-                    message: "Error! empty parameter",
+                    message: "Error! empty parameter or not a string",
                     field: "author"
                 })
         } else if (author.length > 20) {
