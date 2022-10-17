@@ -17,7 +17,7 @@ type typeErrorResult = {
     "errorsMessages": Array<typeError>
 }
 
-const enum listRes {
+enum listRes {
     P144 = "P144",
     P240 = "P240",
     P360 = "P360",
@@ -27,8 +27,7 @@ const enum listRes {
     P1440 = "P1440",
     P2160 = "P2160"
 }
-
-let resolutions: typeResolutions = [listRes.P144, listRes.P240, listRes.P360, listRes.P480, listRes.P720, listRes.P1080, listRes.P1440, listRes.P2160]
+let resolutions: typeResolutions = Object.values(listRes)
 let videos: Array<typeVideo> = []
 
 export const videosRepository = {
