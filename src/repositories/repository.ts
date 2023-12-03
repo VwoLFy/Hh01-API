@@ -27,18 +27,28 @@ enum listRes {
     P1440 = "P1440",
     P2160 = "P2160"
 }
+
 let resolutions: typeResolutions = Object.values(listRes)
-let videos: Array<typeVideo> = []
+let videos: Array<typeVideo> = [{
+    id: 0,
+    author: 'Scott',
+    availableResolutions: ['1'],
+    canBeDownloaded: true,
+    title: 'title1',
+    createdAt: new Date().toJSON(),
+    minAgeRestriction: 11,
+    publicationDate: (new Date()).toJSON()
+}]
 
 export const videosRepository = {
-    findVideos () {
+    findVideos() {
         return videos;
     },
-    findVideoById (id:number) {
+    findVideoById(id: number) {
         let foundVideo = videos.find(v => v.id === id);
         return foundVideo
     },
-    createVideo (title: string, author: string, availableResolutions: typeResolutions) {
+    createVideo(title: string, author: string, availableResolutions: typeResolutions) {
         let APIErrorResult: typeErrorResult = {
             "errorsMessages": []
         }
@@ -69,10 +79,11 @@ export const videosRepository = {
                     field: "author"
                 })
         }
+        console.log(availableResolutions)
         if (!Array.isArray(availableResolutions)) {
             APIErrorResult.errorsMessages.push(
                 {
-                    message: "Error! input is not valid",
+                    message: "Error! input is not array",
                     field: "availableResolutions"
                 })
         } else {
@@ -194,7 +205,7 @@ export const videosRepository = {
             return {isUpdated: false, error: null}
         }
     },
-    deleteVideo (id: number) {
+    deleteVideo(id: number) {
         let foundVideo = videos.find(v => v.id == id)
         if (foundVideo) {
             videos.splice(videos.indexOf(foundVideo), 1);
@@ -203,7 +214,7 @@ export const videosRepository = {
             return false
         }
     },
-    deleteAllVideos () {
+    deleteAllVideos() {
         videos.splice(0);
     }
 }
