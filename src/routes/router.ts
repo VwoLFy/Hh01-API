@@ -3,6 +3,12 @@ import {videosRepository} from "../repositories/repository";
 
 export const videosRouter = Router({});
 export const deleteRouter = Router({});
+export const mainRouter = Router({});
+
+mainRouter.get("/", (req: Request, res: Response) => {
+    const mainMessage = 'Hola!'
+    res.send(mainMessage)
+})
 
 videosRouter.get("/", (req: Request, res: Response) => {
     const foundVideos = videosRepository.findVideos();
