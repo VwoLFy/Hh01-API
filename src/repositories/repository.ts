@@ -1,20 +1,32 @@
-type typeResolutions = Array<string>
-type typeVideo = {
-    "id": number,
-    "title": string,
-    "author": string,
-    "canBeDownloaded": boolean,
-    "minAgeRestriction": number | null,
-    "createdAt": string,
-    "publicationDate": string,
-    "availableResolutions": typeResolutions
+export type VideoType = {
+    id: number,
+    title: string,
+    author: string,
+    canBeDownloaded: boolean,
+    minAgeRestriction: number | null,
+    createdAt: string,
+    publicationDate: string,
+    availableResolutions: string[]
 }
-type typeError = {
+type FieldErrorType = {
     "message": string,
     "field": string
 }
-type typeErrorResult = {
-    "errorsMessages": Array<typeError>
+export type APIErrorResultType = {
+    "errorsMessages": FieldErrorType[]
+}
+export type CreateVideoInputModel = {
+    title: string,
+    author: string,
+    availableResolutions: string[]
+}
+export type UpdateVideoInputModel = {
+    title: string,
+    author: string,
+    availableResolutions: string[] | null,
+    canBeDownloaded: boolean | null,
+    minAgeRestriction: number | null,
+    publicationDate: string | null
 }
 
 enum listRes {
@@ -28,17 +40,9 @@ enum listRes {
     P2160 = "P2160"
 }
 
-let resolutions: typeResolutions = Object.values(listRes)
-let videos: Array<typeVideo> = [{
-    id: 0,
-    author: 'Scott',
-    availableResolutions: ['1'],
-    canBeDownloaded: true,
-    title: 'title1',
-    createdAt: new Date().toJSON(),
-    minAgeRestriction: 11,
-    publicationDate: (new Date()).toJSON()
-}]
+let resolutions: string[] = Object.values(listRes)
+
+let videos: VideoType[] = []
 
 export const videosRepository = {
     findVideos() {
@@ -48,8 +52,9 @@ export const videosRepository = {
         let foundVideo = videos.find(v => v.id === id);
         return foundVideo
     },
-    createVideo(title: string, author: string, availableResolutions: typeResolutions) {
-        let APIErrorResult: typeErrorResult = {
+    createVideo(dto: CreateVideoInputModel) {
+        const {title, author, availableResolutions} = dto
+        let APIErrorResult: APIErrorResultType = {
             "errorsMessages": []
         }
 
@@ -79,7 +84,7 @@ export const videosRepository = {
                     field: "author"
                 })
         }
-        console.log(availableResolutions)
+
         if (!Array.isArray(availableResolutions)) {
             APIErrorResult.errorsMessages.push(
                 {
@@ -105,20 +110,20 @@ export const videosRepository = {
         let createdAt = new Date();
 
         let newVideo = {
-            "id": videos.length + 1,
-            "title": title,
-            "author": author,
-            "canBeDownloaded": false,
-            "minAgeRestriction": null,
-            "createdAt": createdAt.toJSON(),
-            "publicationDate": (new Date(createdAt.setDate(createdAt.getDate() + 1))).toJSON(),
-            "availableResolutions": availableResolutions
+            id: videos.length + 1,
+            title: title,
+            author: author,
+            canBeDownloaded: false,
+            minAgeRestriction: null,
+            createdAt: createdAt.toJSON(),
+            publicationDate: (new Date(createdAt.setDate(createdAt.getDate() + 1))).toJSON(),
+            availableResolutions: availableResolutions
         }
         videos.push(newVideo);
         return {isPosted: true, result: newVideo}
     },
-    updateVideoById(id: number, title: string, author: string, canBeDownloaded: boolean, minAgeRestriction: number | null, publicationDate: string, availableResolutions: typeResolutions) {
-        let APIErrorResult: typeErrorResult = {
+    updateVideoById(id: number, title: string, author: string, canBeDownloaded: boolean, minAgeRestriction: number | null, publicationDate: string, availableResolutions: listRes[]) {
+        let APIErrorResult: APIErrorResultType = {
             "errorsMessages": []
         }
         if (typeof title !== "string" || !title.trim()) {
