@@ -1,5 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { videosRepository } from '../repositories/repository';
+import { HTTP_Status } from '../enums';
 
 export const videosRouter = Router({});
 export const deleteRouter = Router({});
@@ -17,9 +18,9 @@ videosRouter.get('/', (req: Request, res: Response) => {
 videosRouter.post('/', (req: Request, res: Response) => {
   const resultOfCreated = videosRepository.createVideo(req.body);
   if (!resultOfCreated.isPosted) {
-    res.status(400);
+    res.status(HTTP_Status.BAD_REQUEST_400);
   } else {
-    res.status(201);
+    res.status(HTTP_Status.CREATED_201);
   }
   res.send(resultOfCreated.result);
 });
@@ -28,37 +29,29 @@ videosRouter.get('/:id', (req: Request, res: Response) => {
   if (foundVideo) {
     res.send(foundVideo);
   } else {
-    res.sendStatus(404);
+    res.sendStatus(HTTP_Status.NOT_FOUND_404);
   }
 });
 videosRouter.put('/:id', (req: Request, res: Response) => {
-  let resultOfUpdated = videosRepository.updateVideoById(
-    +req.params.id,
-    req.body.title,
-    req.body.author,
-    req.body.canBeDownloaded,
-    req.body.minAgeRestriction,
-    req.body.publicationDate,
-    req.body.availableResolutions,
-  );
+  let resultOfUpdated = videosRepository.updateVideoById(+req.params.id, req.body);
   if (!resultOfUpdated.isUpdated && resultOfUpdated.error) {
-    res.status(400).send(resultOfUpdated.error);
+    res.status(HTTP_Status.BAD_REQUEST_400).send(resultOfUpdated.error);
   } else if (!resultOfUpdated.isUpdated && resultOfUpdated) {
-    res.sendStatus(404);
+    res.sendStatus(HTTP_Status.NOT_FOUND_404);
   } else {
-    res.sendStatus(204);
+    res.sendStatus(HTTP_Status.NO_CONTENT_204);
   }
 });
 videosRouter.delete('/:id', (req: Request, res: Response) => {
   let isDeleted = videosRepository.deleteVideo(+req.params.id);
   if (isDeleted) {
-    res.sendStatus(204);
+    res.sendStatus(HTTP_Status.NO_CONTENT_204);
   } else {
-    res.sendStatus(404);
+    res.sendStatus(HTTP_Status.NOT_FOUND_404);
   }
 });
 
 deleteRouter.delete('/', (req: Request, res: Response) => {
   videosRepository.deleteAllVideos();
-  res.sendStatus(204);
+  res.sendStatus(HTTP_Status.NO_CONTENT_204);
 });
